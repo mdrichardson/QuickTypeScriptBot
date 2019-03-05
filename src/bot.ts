@@ -36,15 +36,6 @@ export class MyBot {
     public onTurn = async (turnContext: TurnContext) => {
         const dc = await this.dialogs.createContext(turnContext);
 
-        // Ensure that message is a postBack (like a submission from Adaptive Cards
-        if (dc.context.activity.type === 'message' && dc.context.activity.channelData.postback) {
-            const activity = dc.context.activity;
-            // Convert the user's Adaptive Card input into the input of a Text Prompt
-            // Must be sent as a string
-            activity.text = JSON.stringify(activity.value);
-            dc.context.sendActivity(activity);
-        }
-
         const dialogResult = await dc.continueDialog();
 
         if (!dc.context.responded) {
@@ -61,7 +52,16 @@ export class MyBot {
         }
 
         if (turnContext.activity.type === ActivityTypes.Message) {
-            await this.quickTest.onMessage(dc);
+            // Ensure that message is a postBack (like a submission from Adaptive Cards
+            if (dc.context.activity.channelData.postback) {
+                const activity = dc.context.activity;
+                // Convert the user's Adaptive Card input into the input of a Text Prompt
+                // Must be sent as a string
+                activity.text = JSON.stringify(activity.value);
+                dc.context.sendActivity(activity);
+            } else {
+                await this.quickTest.onMessage(dc);
+            }
         } else if (turnContext.activity.type === ActivityTypes.ConversationUpdate) {
             if (turnContext.activity.membersAdded.length !== 0) {
                 for (const idx in turnContext.activity.membersAdded) {
