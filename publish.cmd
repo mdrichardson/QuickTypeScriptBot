@@ -1,0 +1,1 @@
+az bot publish --resource-group v-micricQuickTS -n QuickTestBot_TS --subscription 0389857f-2464-451b-ac83-5f54d565b1a7 -v v4 --verbose --code-dir "." 

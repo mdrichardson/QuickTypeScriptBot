@@ -1,0 +1,57 @@
+{
+    "name": "QuickTestBot_TS",
+    "description": "",
+    "services": [
+        {
+            "type": "abs",
+            "id": "3",
+            "name": "QuickTestBot_TS",
+            "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47",
+            "subscriptionId": "0389857f-2464-451b-ac83-5f54d565b1a7",
+            "resourceGroup": "v-micricQuickTS",
+            "serviceName": "QuickTestBot_TS",
+            "appId": "d56fe7de-4f08-4ec6-aa1c-ab0ccc07265c"
+        },
+        {
+            "type": "endpoint",
+            "id": "90",
+            "name": "development",
+            "appId": "",
+            "appPassword": "",
+            "endpoint": "http://localhost:3978/api/messages"
+        },
+        {
+            "type": "endpoint",
+            "id": "2",
+            "name": "production",
+            "appId": "d56fe7de-4f08-4ec6-aa1c-ab0ccc07265c",
+            "appPassword": "QtFY7kJ8FJtF2VrSVXaqjg==!RRRxUkRFNoT9mX1aOSPxIfVVtq4IBxq1bh/qaznap2k=",
+            "endpoint": "https://uickestotv34p.azurewebsites.net/api/messages"
+        },
+        {
+            "type": "appInsights",
+            "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47",
+            "subscriptionId": "0389857f-2464-451b-ac83-5f54d565b1a7",
+            "resourceGroup": "v-micricQuickTS",
+            "name": "QuickTestBot_TSeeqkvi",
+            "serviceName": "QuickTestBot_TSeeqkvi",
+            "instrumentationKey": "c1we3sLUfmJ0W0slbTnTUA==!T9owEOBH716gC9mlu3H3vDuA3BeRjsIClX+ciLGnuO2X5Gi3GzE7qyJ8cMlSIbCB",
+            "applicationId": "3fb3f23d-42e8-47ea-8a41-db67b8c9d491",
+            "apiKeys": {},
+            "id": "32"
+        },
+        {
+            "type": "blob",
+            "name": "uickestz2yd",
+            "serviceName": "uickestz2yd",
+            "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47",
+            "subscriptionId": "0389857f-2464-451b-ac83-5f54d565b1a7",
+            "resourceGroup": "v-micricQuickTS",
+            "connectionString": "qonpzfADanZYrYnMMM+50g==!PIYLUf5qQ1lDZiz45J4HDmsWy3tutagbjIjHURpnZlqmUi80W8p0IkJX/okTf0u0HJvzVBt0nO92Rq6vmEoo1OBXf6LLf+OlrsFxz2mbE15yMqH1W+4qRBG06c1MiWud+Y80dZsRkDBFhmN1UUgWPlxLowI0DvtpmfCLWHwwWIyoqCcEFU6ZlbonpkqfPO8ebiir6usD66XwDMcPogf6Db6LiAnUQfYwmBhw1pKRaEWD5/1GiG9h4GXqo6x7YEbj",
+            "container": null,
+            "id": "207"
+        }
+    ],
+    "padlock": "wY4mnXr2F9WEYp1diU/S5Q==!4QBrbnXvSMr1pIdNb/q5pu6fAISps0RbTY9lAQE/jxRQFWzCjrRCzknXLc6qK+5V",
+    "version": "2.0"
+}
