@@ -28,6 +28,7 @@ export class QuickDialog extends ComponentDialog {
     }
 
     private stepOne = async (step: WaterfallStepContext) => {
+        await step.context.sendActivity('Beginning QuickDialog...');
         return await step.next();
     }
 

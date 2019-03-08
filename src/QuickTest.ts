@@ -4,6 +4,7 @@ export class QuickTest {
 
     public onWelcome = async (dc: DialogContext) => {
         await dc.context.sendActivity('Executing welcome test...');
+        await dc.beginDialog('quickDialog');
         return;
     }
 
