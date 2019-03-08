@@ -5,6 +5,7 @@
     "module": "commonjs",
     "sourceMap": true,
     "outDir": "./lib",
-    "rootDir": "./src"
+    "rootDir": "./src",
+    "resolveJsonModule": true
   }
 }

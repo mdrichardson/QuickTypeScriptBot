@@ -1,4 +1,5 @@
 import { DialogContext } from 'botbuilder-dialogs';
+import * as adaptiveCard from '../src/adaptiveCard.json';
 
 export class QuickTest {
 
