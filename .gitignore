@@ -1,3 +1,22 @@
-node_modules
 lib
 .env
+
+# Git luisRecognizer
+
+node_modules/*
+!node_modules/botbuilder-ai/
+
+node_modules/botbuilder-ai/*
+!node_modules/botbuilder-ai/src
+
+node_modules/botbuilder-ai/src/*
+!node_modules/botbuilder-ai/src/luisRecognizer.ts
+
+# Git luisRecognizer tests
+
+!node_modules/botbuilder-ai/tests
+
+node_modules/botbuilder-ai/tests/*
+!node_modules/botbuilder-ai/tests/luisRecognizer.test.js
+
+
