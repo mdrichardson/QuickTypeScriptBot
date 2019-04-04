@@ -1,77 +1,55 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-import { ActivityTypes, ConversationState, StatePropertyAccessor, TurnContext } from 'botbuilder';
-import { DialogSet, DialogState, DialogTurnStatus } from 'botbuilder-dialogs';
+import { ActivityTypes, ConversationState, StatePropertyAccessor, UserState, ActivityHandler } from 'botbuilder';
+import { DialogState, Dialog } from 'botbuilder-dialogs';
 
-import { QuickDialog } from './QuickDialog';
-import { QuickTest } from './QuickTest';
+import { ActivityTester } from './ActivityTester';
 
-const DIALOG_STATE_PROPERTY = 'dialogState';
-const QUICK_DIALOG_ID = 'quickDialog';
+export class MyBot extends ActivityHandler {
 
-export class MyBot {
-
-    private readonly dialogs: DialogSet;
     private conversationState: ConversationState;
+    private dialog: Dialog;
     private dialogState: StatePropertyAccessor<DialogState>;
-    private quickTest: QuickTest;
+    private activityTester: ActivityTester;
+    private userState: UserState;
 
-    constructor(conversationState: ConversationState) {
-        if (!conversationState) { throw new Error('Need to provide conversation state when calling bot'); }
+    constructor(conversationState: ConversationState, userState: UserState, dialog: Dialog) {
+        super();
 
-        this.dialogState = conversationState.createProperty(DIALOG_STATE_PROPERTY);
+        this.dialogState = conversationState.createProperty('DialogState');
         this.conversationState = conversationState;
+        this.userState = userState;
 
-        this.dialogs = new DialogSet(this.dialogState)
-            .add(new QuickDialog(QUICK_DIALOG_ID));
+        this.dialog = dialog;
 
-        this.quickTest = new QuickTest();
-    }
-    /**
-     * Use onTurn to handle an incoming activity, received from a user, process it, and reply as needed
-     *
-     * @param {TurnContext} turnContext context object.
-     */
-    public onTurn = async (turnContext: TurnContext) => {
-        const dc = await this.dialogs.createContext(turnContext);
+        this.activityTester = new ActivityTester(this.dialog, this.dialogState);
 
-        const dialogResult = await dc.continueDialog();
+        this.onConversationUpdate(async (turnContext, next) => { await this.activityTester.onConversationUpdate(turnContext); await next(); });
+        this.onDialog(async (turnContext, next) => { await this.activityTester.onDialog(turnContext); await next(); });
+        this.onEvent(async (turnContext, next) => { await this.activityTester.onEvent(turnContext); await next(); });
+        this.onMembersAdded(async (turnContext, next) => { await this.activityTester.onMembersAdded(turnContext); await next(); });
+        this.onMembersRemoved(async (turnContext, next) => { await this.activityTester.onMembersRemoved(turnContext); await next(); });
+        this.onMessage(async (turnContext, next) => { await this.activityTester.onMessage(turnContext); await next(); });
+        this.onTokenResponseEvent(async (turnContext, next) => { await this.activityTester.onTokenResponseEvent(turnContext); await next(); });
+        this.onUnrecognizedActivityType(async (turnContext, next) => { await this.activityTester.onUnrecognizedActivityType(turnContext); await next(); });
 
-        if (!dc.context.responded) {
-            switch (dialogResult.status) {
-                case DialogTurnStatus.complete:
-                    await dc.endDialog();
-                    break;
-                case DialogTurnStatus.empty:
-                case DialogTurnStatus.waiting:
-                default:
-                    await dc.cancelAllDialogs();
-                    break;
-            }
-        }
+        this.onTurn(async (turnContext, next) => {
 
-        if (turnContext.activity.type === ActivityTypes.Message) {
-            // Ensure that message is a postBack (like a submission from Adaptive Cards
-            if (dc.context.activity.channelData.postback) {
-                const activity = dc.context.activity;
-                // Convert the user's Adaptive Card input into the input of a Text Prompt
-                // Must be sent as a string
-                activity.text = JSON.stringify(activity.value);
-                dc.context.sendActivity(activity);
-            } else {
-                await this.quickTest.onMessage(dc);
-            }
-        } else if (turnContext.activity.type === ActivityTypes.ConversationUpdate) {
-            if (turnContext.activity.membersAdded.length !== 0) {
-                for (const idx in turnContext.activity.membersAdded) {
-                    if (turnContext.activity.membersAdded[idx].id !== turnContext.activity.recipient.id) {
-                        await this.quickTest.onWelcome(dc);
-                    }
+            if (turnContext.activity.type === ActivityTypes.Message) {
+                // Ensure that message is a postBack (like a submission from Adaptive Cards
+                if (turnContext.activity.channelData.postback) {
+                    const activity = turnContext.activity;
+                    // Convert the user's Adaptive Card input into the input of a Text Prompt
+                    // Must be sent as a string
+                    activity.text = JSON.stringify(activity.value);
+                    await turnContext.sendActivity(activity);
                 }
             }
-        }
 
-        await this.conversationState.saveChanges(turnContext);
+            await this.conversationState.saveChanges(turnContext, false);
+            await this.userState.saveChanges(turnContext, false);
+            await next();
+        });
     }
 }
