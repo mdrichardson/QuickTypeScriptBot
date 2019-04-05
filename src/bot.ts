@@ -1,17 +1,16 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-import { ActivityTypes, ConversationState, StatePropertyAccessor, UserState, ActivityHandler } from 'botbuilder';
+import { ActivityTypes, ConversationState, StatePropertyAccessor, UserState, ActivityHandler, TurnContext } from 'botbuilder';
 import { DialogState, Dialog } from 'botbuilder-dialogs';
 
-import { ActivityTester } from './ActivityTester';
+import * as ActivityTester from './ActivityTester';
 
 export class MyBot extends ActivityHandler {
 
     private conversationState: ConversationState;
     private dialog: Dialog;
     private dialogState: StatePropertyAccessor<DialogState>;
-    private activityTester: ActivityTester;
     private userState: UserState;
 
     constructor(conversationState: ConversationState, userState: UserState, dialog: Dialog) {
@@ -23,16 +22,14 @@ export class MyBot extends ActivityHandler {
 
         this.dialog = dialog;
 
-        this.activityTester = new ActivityTester(this.dialog, this.dialogState);
-
-        this.onConversationUpdate(async (turnContext, next) => { await this.activityTester.onConversationUpdate(turnContext); await next(); });
-        this.onDialog(async (turnContext, next) => { await this.activityTester.onDialog(turnContext); await next(); });
-        this.onEvent(async (turnContext, next) => { await this.activityTester.onEvent(turnContext); await next(); });
-        this.onMembersAdded(async (turnContext, next) => { await this.activityTester.onMembersAdded(turnContext); await next(); });
-        this.onMembersRemoved(async (turnContext, next) => { await this.activityTester.onMembersRemoved(turnContext); await next(); });
-        this.onMessage(async (turnContext, next) => { await this.activityTester.onMessage(turnContext); await next(); });
-        this.onTokenResponseEvent(async (turnContext, next) => { await this.activityTester.onTokenResponseEvent(turnContext); await next(); });
-        this.onUnrecognizedActivityType(async (turnContext, next) => { await this.activityTester.onUnrecognizedActivityType(turnContext); await next(); });
+        this.onConversationUpdate(async (turnContext, next) => { await ActivityTester.onConversationUpdate(turnContext, this.dialog, this.dialogState); await next(); });
+        this.onDialog(async (turnContext, next) => { await ActivityTester.onDialog(turnContext, this.dialog, this.dialogState); await next(); });
+        this.onEvent(async (turnContext, next) => { await ActivityTester.onEvent(turnContext, this.dialog, this.dialogState); await next(); });
+        this.onMembersAdded(async (turnContext, next) => { await ActivityTester.onMembersAdded(turnContext, this.dialog, this.dialogState); await next(); });
+        this.onMembersRemoved(async (turnContext, next) => { await ActivityTester.onMembersRemoved(turnContext, this.dialog, this.dialogState); await next(); });
+        this.onMessage(async (turnContext, next) => { await ActivityTester.onMessage(turnContext, this.dialog, this.dialogState); await next(); });
+        this.onTokenResponseEvent(async (turnContext, next) => { await ActivityTester.onTokenResponseEvent(turnContext, this.dialog, this.dialogState); await next(); });
+        this.onUnrecognizedActivityType(async (turnContext, next) => { await ActivityTester.onUnrecognizedActivityType(turnContext, this.dialog, this.dialogState); await next(); });
 
         this.onTurn(async (turnContext, next) => {
 

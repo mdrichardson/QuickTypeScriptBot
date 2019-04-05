@@ -52,17 +52,17 @@ export class QuickDialog extends ComponentDialog {
         }
     }
 
-    private stepOne = async (step: WaterfallStepContext) => {
+    private async stepOne (step: WaterfallStepContext) {
         await step.context.sendActivity('Beginning QuickDialog...');
         return await step.next();
     }
 
-    private stepTwo = async (step: WaterfallStepContext) => {
+    private async stepTwo (step: WaterfallStepContext) {
         // await step.context.sendActivity(`You said ${step.result}`);
         return await step.next();
     }
 
-    private end = async (step: WaterfallStepContext) => {
+    private async end (step: WaterfallStepContext) {
         return await step.endDialog();
     }
 }
