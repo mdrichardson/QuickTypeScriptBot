@@ -8,8 +8,8 @@
     "scripts": {
         "build": "tsc --build",
         "lint": "node_modules/.bin/tslint -c tslint.json 'src/**/*.ts'",
-        "postinstall": "\"npm install typescript\" && \"npm run build\" && \"node ./deploymentScripts/webConfigPrep.js\"",
-        "start": "\"tsc --build\" && \"node ./lib/index.js\"",
+        "postinstall": "npm install typescript & npm run build & node ./deploymentScripts/webConfigPrep.js",
+        "start": "tsc --build && node ./lib/index.js",
         "test": "echo \"Error: no test specified\" && exit 1",
         "watch": "node_modules/.bin/nodemon --watch ./src -e ts --exec \"npm run start\""
     },
@@ -44,6 +44,6 @@
         "eslint-plugin-standard": "^4.0.0",
         "nodemon": "^1.18.10",
         "tslint": "~5.14.0",
-        "typescript": "~3.3.3"
+        "typescript": "^3.3.4000"
     }
 }
