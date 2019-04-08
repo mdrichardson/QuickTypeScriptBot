@@ -1,5 +1,8 @@
 #!/bin/bash
 #zip -r update.zip ./* && # Zip EVERYTHING
-git archive --format=zip -o update.zip HEAD # Zip just HEAD/git-committed stuff (use when alwaysBuildOnDeploy: true)
+git checkout -b deploymentBranch
+git add .
+git commit -m "deployment"
+git archive --format=zip -o update.zip deploymentBranch # Zip just HEAD/git-committed stuff (use when alwaysBuildOnDeploy: true)
 #az webapp deployment source config-zip --resource-group "v-micricQuickTS" --name "v-micricQuickTS" --src "update.zip" --verbose --debug
 #rm -f update.zip
