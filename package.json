@@ -6,7 +6,7 @@
     "license": "MIT",
     "main": "./lib/index.js",
     "scripts": {
-        "build": "node_modules/.bin/tsc --build",
+        "build": "tsc --build",
         "lint": "node_modules/.bin/tslint -c tslint.json 'src/**/*.ts'",
         "postinstall": "npm install typescript && npm run build && node ./deploymentScripts/webConfigPrep.js",
         "start": "node_modules/.bin/tsc --build && node ./lib/index.js",
