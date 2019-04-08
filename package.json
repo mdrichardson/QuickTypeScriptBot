@@ -8,8 +8,7 @@
     "scripts": {
         "build": "node_modules/.bin/tsc --build",
         "lint": "node_modules/.bin/tslint -c tslint.json 'src/**/*.ts'",
-        "preinstall": "npm install --save typescript",
-        "postinstall": "npm run build && node ./deploymentScripts/webConfigPrep.js",
+        "postinstall": "npm install --save typescript && npm run build && node ./deploymentScripts/webConfigPrep.js",
         "start": "node_modules/.bin/tsc --build && node ./lib/index.js",
         "test": "echo \"Error: no test specified\" && exit 1",
         "watch": "node_modules/.bin/nodemon --watch ./src -e ts --exec \"npm run start\""
