@@ -1,8 +1,6 @@
 #!/bin/bash
-#zip -r update.zip ./* && # Zip EVERYTHING
-git checkout -b deploymentBranch
-git add .
-git commit -m "deployment"
-git archive --format=zip -o update.zip deploymentBranch # Zip just HEAD/git-committed stuff (use when alwaysBuildOnDeploy: true)
-#az webapp deployment source config-zip --resource-group "v-micricQuickTS" --name "v-micricQuickTS" --src "update.zip" --verbose --debug
-#rm -f update.zip
+# Grab zip from https://github.com/bmatzelle/gow and add to C:\Program Files\Git\usr\bin
+echo "---PUBLISHING---"
+zip -0 -r -q update.zip . &&
+az webapp deployment source config-zip --resource-group "v-micricQuickTS" --name "v-micricQuickTS" --src "update.zip" --verbose --debug
+rm -f update.zip
