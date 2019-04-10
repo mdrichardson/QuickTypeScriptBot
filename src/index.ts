@@ -24,7 +24,7 @@ const loadFromEnv = config({ path: ENV_FILE });
 
 const adapter = new BotFrameworkAdapter({
     appId: process.env.MicrosoftAppID,
-    appPassword: process.env.MicrosoftAppPassword,
+    appPassword: process.env.MicrosoftAppPassword
 });
 
 const dataStorage = new MemoryStorage();

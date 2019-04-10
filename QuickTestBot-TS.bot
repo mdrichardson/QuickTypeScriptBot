@@ -1,0 +1,34 @@
+{
+    "name": "QuickTestBot_TS",
+    "description": "",
+    "services": [
+        {
+            "type": "endpoint",
+            "name": "development",
+            "endpoint": "http://localhost:3978/api/messages",
+            "appId": "fc8f83fa-10c2-4f30-92ce-1e8ad6367fe6",
+            "appPassword": "iwvGKZBYuaDoMOnbAnbYbg==!GC/QTDILE2XPLr7D8UjAokH7Hvkh8hs+0iv9Fei/A4E=",
+            "id": "1"
+        },
+        {
+            "type": "endpoint",
+            "name": "relay",
+            "endpoint": "https://bfsupportrelay.servicebus.windows.net/vmicricQuickTS/api/messages",
+            "appId": "fc8f83fa-10c2-4f30-92ce-1e8ad6367fe6",
+            "appPassword": "ERVsIcTZ3FPcUpX1RGBrNw==!nq7jaYpyh5bp6lzxjz1nOLCiWIrFih6eF5//q8oINk8=",
+            "id": "2"
+        },
+        {
+            "type": "endpoint",
+            "appId": "fc8f83fa-10c2-4f30-92ce-1e8ad6367fe6",
+            "appPassword": "7E5uCgNi3hEuFYlO0pAgTQ==!t5xy/n/kxhoP35ZxijXTwQ2HS3LxWsZp7aIOyYZykPs=",
+            "endpoint": "https://v-micricquickts.azurewebsites.net/api/messages",
+            "name": "production",
+            "id": "11"
+        }
+    ],
+    "padlock": "UBY5Xq/ZGk+lXmGAuYDCXw==!V7WIZ3g2rvAvCQPub2xTDvfut81C8AeAYT/FOWu0iBmk6rgJx/5j1Zu1GbSmHiDn",
+    "version": "2.0",
+    "path": "C:\\Users\\v-micric\\Documents\\Code\\Bots - Mine\\QuickTestBot-TS\\QuickTestBot-TS.bot",
+    "overrides": null
+}
