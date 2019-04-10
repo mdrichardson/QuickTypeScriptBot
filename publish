@@ -1,6 +1,6 @@
 #!/bin/bash
-# Grab zip from https://github.com/bmatzelle/gow and add to C:\Program Files\Git\usr\bin
 echo "---PUBLISHING---"
-zip -0 -r -q update.zip . &&
+# zip -0 -r -q update.zip . &&  # Non-powershell: # Grab zip from https://github.com/bmatzelle/gow and add to C:\Program Files\Git\usr\bin
+7z a -r update.zip -ma=0 && # Need to download 7zip then symlink 7zip.exe to C:\Program Files\Git\usr\bin
 az webapp deployment source config-zip --resource-group "v-micricQuickTS" --name "v-micricQuickTS" --src "update.zip" --verbose --debug
 rm -f update.zip
