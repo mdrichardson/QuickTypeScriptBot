@@ -48,7 +48,7 @@ const myBot = new MyBot(conversationState, userState, dialog);
 const server = restify.createServer();
 server.listen(process.env.port || process.env.PORT || 3978, () => {
     console.log(`\n${ server.name } listening to ${ server.url }`);
-    console.log(`\nGet Bot Framework Emulator: https://aka.ms/botframework-emulator`);
+    console.log(`\nOpen in Emulator: bfemulator://livechat.open?botUrl=http%3A%2F%2Flocalhost%3A3978%2Fapi%2Fmessage`);
     console.log(`\nSee https://aka.ms/connect-to-bot for more information`);
 });
 

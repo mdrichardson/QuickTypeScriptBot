@@ -22,14 +22,14 @@ export class MyBot extends ActivityHandler {
 
         this.dialog = dialog;
 
-        this.onConversationUpdate(async (turnContext, next) => { await ActivityTester.onConversationUpdate(turnContext, this.dialog, this.dialogState); await next(); });
-        this.onDialog(async (turnContext, next) => { await ActivityTester.onDialog(turnContext, this.dialog, this.dialogState); await next(); });
-        this.onEvent(async (turnContext, next) => { await ActivityTester.onEvent(turnContext, this.dialog, this.dialogState); await next(); });
-        this.onMembersAdded(async (turnContext, next) => { await ActivityTester.onMembersAdded(turnContext, this.dialog, this.dialogState); await next(); });
-        this.onMembersRemoved(async (turnContext, next) => { await ActivityTester.onMembersRemoved(turnContext, this.dialog, this.dialogState); await next(); });
-        this.onMessage(async (turnContext, next) => { await ActivityTester.onMessage(turnContext, this.dialog, this.dialogState); await next(); });
-        this.onTokenResponseEvent(async (turnContext, next) => { await ActivityTester.onTokenResponseEvent(turnContext, this.dialog, this.dialogState); await next(); });
-        this.onUnrecognizedActivityType(async (turnContext, next) => { await ActivityTester.onUnrecognizedActivityType(turnContext, this.dialog, this.dialogState); await next(); });
+        this.onConversationUpdate(async (context, next) => { await ActivityTester.onConversationUpdate(context, this.dialog, this.dialogState); await next(); });
+        this.onDialog(async (context, next) => { await ActivityTester.onDialog(context, this.dialog, this.dialogState); await next(); });
+        this.onEvent(async (context, next) => { await ActivityTester.onEvent(context, this.dialog, this.dialogState); await next(); });
+        this.onMembersAdded(async (context, next) => { await ActivityTester.onMembersAdded(context, this.dialog, this.dialogState); await next(); });
+        this.onMembersRemoved(async (context, next) => { await ActivityTester.onMembersRemoved(context, this.dialog, this.dialogState); await next(); });
+        this.onMessage(async (context, next) => { await ActivityTester.onMessage(context, this.dialog, this.dialogState); await next(); });
+        this.onTokenResponseEvent(async (context, next) => { await ActivityTester.onTokenResponseEvent(context, this.dialog, this.dialogState); await next(); });
+        this.onUnrecognizedActivityType(async (context, next) => { await ActivityTester.onUnrecognizedActivityType(context, this.dialog, this.dialogState); await next(); });
 
         this.onTurn(async (turnContext, next) => {
 

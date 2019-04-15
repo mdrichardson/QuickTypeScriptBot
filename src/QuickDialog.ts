@@ -41,7 +41,7 @@ export class QuickDialog extends ComponentDialog {
         this.addDialog(new AttachmentPrompt(promptIds.ATTACHMENT));
     }
 
-    public async run(context: TurnContext, accessor: StatePropertyAccessor<DialogState>) {
+    public async run (context: TurnContext, accessor: StatePropertyAccessor<DialogState>) {
         const dialogSet = new DialogSet(accessor);
         dialogSet.add(this);
 

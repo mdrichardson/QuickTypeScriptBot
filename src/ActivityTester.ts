@@ -9,19 +9,19 @@ import { QuickDialog } from './QuickDialog';
 // FREQUENTLY USED
 //
 
-export async function onMembersAdded (turnContext: TurnContext, dialog: Dialog, dialogState: StatePropertyAccessor<DialogState>) {
-    const membersAdded = turnContext.activity.membersAdded;
+export async function onMembersAdded (context: TurnContext, dialog: Dialog, dialogState: StatePropertyAccessor<DialogState>) {
+    const membersAdded = context.activity.membersAdded;
     for (let cnt = 0; cnt < membersAdded.length; cnt++) {
-        if (membersAdded[cnt].id !== turnContext.activity.recipient.id) {
-            await notifyOfActivity('onMembersAdded', turnContext);
-            await (dialog as QuickDialog).run(turnContext, dialogState)
+        if (membersAdded[cnt].id !== context.activity.recipient.id) {
+            await notifyOfActivity('onMembersAdded', context);
+            await (dialog as QuickDialog).run(context, dialogState)
         }
     }
     return;
 }
 
-export async function onMessage (turnContext: TurnContext, dialog: Dialog, dialogState: StatePropertyAccessor<DialogState>) {
-    await notifyOfActivity('onMessage', turnContext);
+export async function onMessage (context: TurnContext, dialog: Dialog, dialogState: StatePropertyAccessor<DialogState>) {
+    await notifyOfActivity('onMessage', context);
     return;
 }
 
@@ -29,38 +29,38 @@ export async function onMessage (turnContext: TurnContext, dialog: Dialog, dialo
 // RARELY USED
 //
 
-export async function onConversationUpdate (turnContext: TurnContext, dialog: Dialog, dialogState: StatePropertyAccessor<DialogState>) {
-    // await notifyOfActivity('onConversationUpdate', turnContext);
+export async function onConversationUpdate (context: TurnContext, dialog: Dialog, dialogState: StatePropertyAccessor<DialogState>) {
+    // await notifyOfActivity('onConversationUpdate', context);
     return;
 }
 
-export async function onDialog (turnContext: TurnContext, dialog: Dialog, dialogState: StatePropertyAccessor<DialogState>) {
-    // await notifyOfActivity('onDialog', turnContext);
+export async function onDialog (context: TurnContext, dialog: Dialog, dialogState: StatePropertyAccessor<DialogState>) {
+    // await notifyOfActivity('onDialog', context);
     return;
 }
 
-export async function onEvent (turnContext: TurnContext, dialog: Dialog, dialogState: StatePropertyAccessor<DialogState>) {
-    // await notifyOfActivity('onEvent', turnContext);
+export async function onEvent (context: TurnContext, dialog: Dialog, dialogState: StatePropertyAccessor<DialogState>) {
+    // await notifyOfActivity('onEvent', context);
     return;
 }
 
 
-export async function onMembersRemoved (turnContext: TurnContext, dialog: Dialog, dialogState: StatePropertyAccessor<DialogState>) {
-    // await notifyOfActivity('onMembersRemoved', turnContext);
+export async function onMembersRemoved (context: TurnContext, dialog: Dialog, dialogState: StatePropertyAccessor<DialogState>) {
+    // await notifyOfActivity('onMembersRemoved', context);
     return;
 }
 
-export async function onTokenResponseEvent (turnContext: TurnContext, dialog: Dialog, dialogState: StatePropertyAccessor<DialogState>) {
-    // await notifyOfActivity('onTokenResponseEvent', turnContext);
+export async function onTokenResponseEvent (context: TurnContext, dialog: Dialog, dialogState: StatePropertyAccessor<DialogState>) {
+    // await notifyOfActivity('onTokenResponseEvent', context);
     return;
 }
 
-export async function onUnrecognizedActivityType (turnContext: TurnContext, dialog: Dialog, dialogState: StatePropertyAccessor<DialogState>) {
-    // await notifyOfActivity('onUnrecognizedActivityType', turnContext);
+export async function onUnrecognizedActivityType (context: TurnContext, dialog: Dialog, dialogState: StatePropertyAccessor<DialogState>) {
+    // await notifyOfActivity('onUnrecognizedActivityType', context);
     return;
 }
 
-async function notifyOfActivity (activity: string, turnContext: TurnContext) {
-    await turnContext.sendActivity(`**Activity [${activity}] has fired**`);
+async function notifyOfActivity (activity: string, context: TurnContext) {
+    await context.sendActivity(`**Activity [${activity}] has fired**`);
     console.log(`\nActivity [${chalk.blue(activity)}] has fired`);
 }
