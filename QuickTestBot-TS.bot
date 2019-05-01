@@ -6,28 +6,28 @@
             "type": "endpoint",
             "name": "development",
             "endpoint": "http://localhost:3978/api/messages",
-            "appId": "fc8f83fa-10c2-4f30-92ce-1e8ad6367fe6",
-            "appPassword": "iwvGKZBYuaDoMOnbAnbYbg==!GC/QTDILE2XPLr7D8UjAokH7Hvkh8hs+0iv9Fei/A4E=",
+            "appId": "94ea2b04-ccba-437e-b3f1-3f0376fcbc98",
+            "appPassword": "GvEyd/tC6m7fhvkRNyTmxA==!yFtgSIgEHF1rTQiat+RVCyhawoqmjNA0bJW+z7TKV7Q=",
             "id": "1"
         },
         {
             "type": "endpoint",
             "name": "relay",
-            "endpoint": "https://bfsupportrelay.servicebus.windows.net/vmicricQuickTS/api/messages",
-            "appId": "fc8f83fa-10c2-4f30-92ce-1e8ad6367fe6",
-            "appPassword": "ERVsIcTZ3FPcUpX1RGBrNw==!nq7jaYpyh5bp6lzxjz1nOLCiWIrFih6eF5//q8oINk8=",
+            "endpoint": "https://bfsupportrelay.servicebus.windows.net/vmicricRelay/api/messages",
+            "appId": "f94ea2b04-ccba-437e-b3f1-3f0376fcbc98",
+            "appPassword": "6zjpqK//GoHFPji2KQO7fw==!D/lFCy+1Rc5SwRp9/f6/tWzPuSbaSytJrAivUkRgg0g=",
             "id": "2"
         },
         {
             "type": "endpoint",
-            "appId": "fc8f83fa-10c2-4f30-92ce-1e8ad6367fe6",
-            "appPassword": "7E5uCgNi3hEuFYlO0pAgTQ==!t5xy/n/kxhoP35ZxijXTwQ2HS3LxWsZp7aIOyYZykPs=",
+            "appId": "94ea2b04-ccba-437e-b3f1-3f0376fcbc98",
+            "appPassword": "wAHbT2y9XzgZXq9IW3t9UA==!VUIV2llBIbfsg8zFB6V5mtLiWsW8D0TLGkMUc0OoewE=",
             "endpoint": "https://v-micricquickts.azurewebsites.net/api/messages",
             "name": "production",
             "id": "11"
         }
     ],
-    "padlock": "UBY5Xq/ZGk+lXmGAuYDCXw==!V7WIZ3g2rvAvCQPub2xTDvfut81C8AeAYT/FOWu0iBmk6rgJx/5j1Zu1GbSmHiDn",
+    "padlock": "GRBcrTyBoxCG2YNn0fUwiA==!3E351Oa7Bf3pgZYI1Fl6QM2PKc5VeUc+iiTvuXRbnV9a0fTLjkkNxoikhozFXDhh",
     "version": "2.0",
     "path": "C:\\Users\\v-micric\\Documents\\Code\\Bots - Mine\\QuickTestBot-TS\\QuickTestBot-TS.bot",
     "overrides": null
