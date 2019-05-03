@@ -10,8 +10,9 @@ import {
     WaterfallStepContext, 
     DialogState, 
     DialogSet,
-    DialogTurnStatus
- } from 'botbuilder-dialogs';
+    DialogTurnStatus,
+    DialogTurnResult
+} from 'botbuilder-dialogs';
 import { TurnContext, StatePropertyAccessor } from 'botbuilder';
 
 const promptIds = {
@@ -24,7 +25,7 @@ const promptIds = {
 };
 
 export class QuickDialog extends ComponentDialog {
-    constructor() {
+    public constructor() {
         super('QuickDialog');
 
         this.addDialog(new WaterfallDialog('QuickWaterfallDialog', [
@@ -41,7 +42,7 @@ export class QuickDialog extends ComponentDialog {
         this.addDialog(new AttachmentPrompt(promptIds.ATTACHMENT));
     }
 
-    public async run (context: TurnContext, accessor: StatePropertyAccessor<DialogState>) {
+    public async run(context: TurnContext, accessor: StatePropertyAccessor<DialogState>): Promise<void> {
         const dialogSet = new DialogSet(accessor);
         dialogSet.add(this);
 
@@ -52,17 +53,17 @@ export class QuickDialog extends ComponentDialog {
         }
     }
 
-    private async stepOne (step: WaterfallStepContext) {
+    private async stepOne(step: WaterfallStepContext): Promise<DialogTurnResult> {
         await step.context.sendActivity('Beginning QuickDialog...');
         return await step.next();
     }
 
-    private async stepTwo (step: WaterfallStepContext) {
+    private async stepTwo(step: WaterfallStepContext): Promise<DialogTurnResult> {
         // await step.context.sendActivity(`You said ${step.result}`);
         return await step.next();
     }
 
-    private async end (step: WaterfallStepContext) {
+    private async end(step: WaterfallStepContext): Promise<DialogTurnResult> {
         return await step.endDialog();
     }
 }
