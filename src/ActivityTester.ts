@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-use-before-define */
 
-import { TurnContext, StatePropertyAccessor } from 'botbuilder';
+import { TurnContext, StatePropertyAccessor, ActivityTypes, MessageFactory } from 'botbuilder';
 import chalk from 'chalk';
 import { Dialog, DialogState } from 'botbuilder-dialogs';
+import { Activity } from 'botbuilder';
 
 import { QuickDialog } from './QuickDialog';
 
@@ -14,9 +15,30 @@ import { QuickDialog } from './QuickDialog';
 export async function onMembersAdded(context: TurnContext, dialog: Dialog, dialogState: StatePropertyAccessor<DialogState>): Promise<void> {
     const membersAdded = context.activity.membersAdded;
     for (let cnt = 0; cnt < membersAdded.length; cnt++) {
+        const message = MessageFactory.text('');
+const disable = {
+    type: ActivityTypes.Event,
+    value: { chatBox: 'disable' }
+}
         if (membersAdded[cnt].id !== context.activity.recipient.id) {
             await notifyOfActivity('onMembersAdded', context);
-            await (dialog as QuickDialog).run(context, dialogState);
+            const disable: Partial<Activity> = {
+                type: ActivityTypes.Event,
+                value: { chatBox: 'disable' }
+            };
+            // const enable: Partial<Activity> = {
+            //     type: ActivityTypes.Event,
+            //     value: { chatBox: 'enable' }
+            // };
+            const enable = MessageFactory.suggestedActions([ 'A', 'B', 'C'], 'Pick');
+            enable.channelData = { chatBox: 'enable' };
+            // const disable = prompt('test prompt');
+            while (true) {
+                // await context.sendActivity(disable);
+                // await new Promise((resolve): NodeJS.Timeout => setTimeout(resolve, 3000));
+                await context.sendActivity(enable);
+                await new Promise((resolve): NodeJS.Timeout => setTimeout(resolve, 3000));
+            }
         }
     }
     return;
