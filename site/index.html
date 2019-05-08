@@ -33,17 +33,17 @@
         const token = 'pDzqYF2CTxI.SJGayYMaCSXZ1_8wxgrdU1k7fWKiT4U9jJzBuBJ2NBo';
 
         // We are adding a new middleware to customize the behavior of DIRECT_LINE/INCOMING_ACTIVITY.
-const store = window.WebChat.createStore(
-    {},
-    ({ dispatch }) => next => action => {
-        if (action && action.payload && action.payload.activity && action.payload.activity.type === 'message' && !action.payload.activity.suggestedActions) {
-const event = new Event(`chatBox`);
-event.data = 'disable';
-            window.dispatchEvent(event);
-        }
-        return next(action);
-    }
-);
+        const store = window.WebChat.createStore(
+            {},
+            ({ dispatch }) => next => action => {
+                if (action && action.payload && action.payload.activity && action.payload.activity.suggestedActions) {
+                    const event = new Event(`chatBox`);
+                    event.data = 'disable';
+                    window.dispatchEvent(event);
+                }
+                return next(action);
+            }
+        );
 
 window.addEventListener('chatBox', ({ data }) => {
     const chatBox = document.querySelector(`[data-id="webchat-sendbox-input"]`);
