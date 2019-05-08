@@ -16,10 +16,10 @@ export async function onMembersAdded(context: TurnContext, dialog: Dialog, dialo
     const membersAdded = context.activity.membersAdded;
     for (let cnt = 0; cnt < membersAdded.length; cnt++) {
         const message = MessageFactory.text('');
-const disable = {
-    type: ActivityTypes.Event,
-    value: { chatBox: 'disable' }
-}
+        const disable = {
+            type: ActivityTypes.Event,
+            value: { chatBox: 'disable' }
+        };
         if (membersAdded[cnt].id !== context.activity.recipient.id) {
             await notifyOfActivity('onMembersAdded', context);
             const disable: Partial<Activity> = {
