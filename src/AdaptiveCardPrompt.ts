@@ -2,6 +2,7 @@ import { PromptValidator, DialogContext, PromptOptions, DialogTurnResult, Prompt
 import { InputHints, TurnContext, Activity, ActionTypes, Attachment } from "botbuilder";
 
 export interface AdaptiveCardPromptOptions {
+    card?: Attachment;
     inputFailMessage?: string;
     requiredInputIds?: string[];
     missingRequiredInputsMessage?: string;
@@ -13,6 +14,7 @@ export class AdaptiveCardPrompt extends Prompt<object> {
     private _requiredInputIds: string[];
     private static _missingRequiredInputsMessage: string;
     private uniqueCardId: string;
+    private card: Attachment;
 
     public constructor(dialogId: string, validator?: PromptValidator<object>, options?: AdaptiveCardPromptOptions) {
         super(dialogId, validator);
@@ -25,6 +27,8 @@ export class AdaptiveCardPrompt extends Prompt<object> {
 
         // Should use GUID for C# -- it isn't native to Node, so this keeps dependencies down
         this.uniqueCardId = `${ Date().toString() }_${ Math.random() }`;
+
+        this.card = options.card;
     }
 
     public set inputFailMessage(newMessage: string|null) {
@@ -39,12 +43,20 @@ export class AdaptiveCardPrompt extends Prompt<object> {
         AdaptiveCardPrompt._missingRequiredInputsMessage = newMessage;
     }
 
-    protected async onPrompt(context: TurnContext, state: object, options: PromptOptions, isRetry: boolean): Promise<void> {        
-        this.validatePromptContainsCard(options, isRetry);
+    protected async onPrompt(context: TurnContext, state: object, options: PromptOptions, isRetry: boolean): Promise<void> {
+        let prompt = isRetry && options.retryPrompt ? (options.retryPrompt as Partial<Activity>) : (options.prompt as Partial<Activity>);
 
-        const prompt = isRetry && options.retryPrompt ? (options.retryPrompt as Activity) : (options.prompt as Activity);
+        // Create a prompt if user didn't pass it in through PromptOptions
+        if (!prompt) {
+            prompt = {
+                attachments: []
+            };
+        }
 
-        prompt.attachments[0] = this.addCardIdToCard(prompt.attachments[0]);
+        // Use card passed in PromptOptions or if it doesn't exist, use the one passed in from the constructor
+        prompt.attachments[0] = prompt.attachments[0] ? this.addCardIdToCard(prompt.attachments[0]) : this.addCardIdToCard(this.card);
+
+        this.validatePromptContainsCard(prompt, isRetry);
 
         await context.sendActivity(prompt, undefined, InputHints.ExpectingInput);
     }
@@ -116,15 +128,16 @@ export class AdaptiveCardPrompt extends Prompt<object> {
         }
     }
 
-    private validatePromptContainsCard(options: PromptOptions, isRetry: boolean): void {
-        const attachments = (options.prompt as Partial<Activity>).attachments;
-        const retryAttachments = (options.prompt as Partial<Activity>).attachments;
+    private throwNoCardError(isRetry: boolean): void {
+        const cardLocation = isRetry ? 'retryPrompt' : 'prompt';
+        throw new Error(`No Adaptive Card provided. Include in the constructor or PromptOptions.(${ cardLocation } as Activity).attachments[0]`);
+    }
+
+    private validatePromptContainsCard(prompt: Partial<Activity>, isRetry: boolean): void {
         const adaptiveCardType = 'application/vnd.microsoft.card.adaptive';
 
-        if (!isRetry && (attachments.length === 0 || attachments[0].contentType !== adaptiveCardType )) {
-            throw new Error('AdaptiveCardPrompt must have an Adaptive Card in PromptOptions.prompt.attachments');
-        } else if (isRetry && (retryAttachments.length === 0 || retryAttachments[0].contentType !== adaptiveCardType)) {
-            throw new Error('AdaptiveCardPrompt must have an Adaptive Card in PromptOptions.retryPrompt.attachments');
+        if (prompt.attachments.length === 0 || prompt.attachments[0].contentType !== adaptiveCardType) {
+            this.throwNoCardError(isRetry);
         }
     }
 
