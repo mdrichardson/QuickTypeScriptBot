@@ -20,6 +20,7 @@ import { TurnContext, StatePropertyAccessor, CardFactory } from 'botbuilder';
 import { AdaptiveCardPrompt } from './AdaptiveCardPrompt';
 
 import * as cardJson from './adaptiveCard.json';
+import * as card2Json from './card2.json';
 
 const promptIds = {
     ADAPTIVE: 'adaptivePrompt',
@@ -43,6 +44,9 @@ export class QuickDialog extends ComponentDialog {
         ]));
 
         const card = CardFactory.adaptiveCard(cardJson);
+        const prompt = new AdaptiveCardPrompt(promptIds.ADAPTIVE, null, {
+            requiredInputIds: ['textInput']
+        });
 
         this.addDialog(new ChoicePrompt(promptIds.CHOICE));
         this.addDialog(new TextPrompt(promptIds.TEXT));
@@ -50,9 +54,7 @@ export class QuickDialog extends ComponentDialog {
         this.addDialog(new DateTimePrompt(promptIds.DATETIME));
         this.addDialog(new ConfirmPrompt(promptIds.CONFIRM));
         this.addDialog(new AttachmentPrompt(promptIds.ATTACHMENT));
-        this.addDialog(new AdaptiveCardPrompt(promptIds.ADAPTIVE, null, {
-            requiredInputIds: ['textInput']
-        }));
+        this.addDialog(prompt);
 
         this.initialDialogId = 'QuickWaterfallDialog';
     }
@@ -71,9 +73,10 @@ export class QuickDialog extends ComponentDialog {
     private async stepOne(step: WaterfallStepContext): Promise<DialogTurnResult> {
         // await step.context.sendActivity('Beginning QuickDialog...');
         const card = CardFactory.adaptiveCard(cardJson);
+        const card2 = CardFactory.adaptiveCard(card2Json);
         const options: PromptOptions = {
             prompt: { attachments: [card] },
-            retryPrompt: { attachments: [card] },
+            // retryPrompt: { attachments: [card2] },
         };
         return await step.prompt(promptIds.ADAPTIVE, options);
         // return await step.beginDialog(promptIds.ADAPTIVEDialog);
@@ -81,7 +84,12 @@ export class QuickDialog extends ComponentDialog {
 
     private async stepTwo(step: WaterfallStepContext): Promise<DialogTurnResult> {
         await step.context.sendActivity(`You said ${ step.result }`);
-        return await step.next();
+        const card = CardFactory.adaptiveCard(cardJson);
+        const options: PromptOptions = {
+            prompt: { attachments: [card] },
+            // retryPrompt: { attachments: [card] },
+        };
+        return await step.prompt(promptIds.ADAPTIVE, options);
     }
 
     private async end(step: WaterfallStepContext): Promise<DialogTurnResult> {
