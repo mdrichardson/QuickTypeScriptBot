@@ -12,6 +12,7 @@ export class AdaptiveCardPrompt extends Prompt<object> {
     private static _inputFailMessage: string;
     private _requiredInputIds: string[];
     private static _missingRequiredInputsMessage: string;
+    private uniqueCardId: string;
 
     public constructor(dialogId: string, validator?: PromptValidator<object>, options?: AdaptiveCardPromptOptions) {
         super(dialogId, validator);
@@ -21,6 +22,9 @@ export class AdaptiveCardPrompt extends Prompt<object> {
 
         this._requiredInputIds = options.requiredInputIds;
         AdaptiveCardPrompt._missingRequiredInputsMessage = options.missingRequiredInputsMessage || 'The following inputs are required';
+
+        // Should use GUID for C# -- it isn't native to Node, so this keeps dependencies down
+        this.uniqueCardId = `${ Date().toString() }_${ Math.random() }`;
     }
 
     public set inputFailMessage(newMessage: string|null) {
@@ -38,14 +42,21 @@ export class AdaptiveCardPrompt extends Prompt<object> {
     protected async onPrompt(context: TurnContext, state: object, options: PromptOptions, isRetry: boolean): Promise<void> {        
         this.validatePromptContainsCard(options, isRetry);
 
-        const prompt = isRetry && options.retryPrompt ? options.retryPrompt : options.prompt;
+        const prompt = isRetry && options.retryPrompt ? (options.retryPrompt as Activity) : (options.prompt as Activity);
+
+        prompt.attachments[0] = this.addCardIdToCard(prompt.attachments[0]);
+
         await context.sendActivity(prompt, undefined, InputHints.ExpectingInput);
     }
 
     protected async onRecognize(context: TurnContext): Promise<PromptRecognizerResult<object>> {
-        // TODO: Validate it comes from the correct card - GUID
         // Ignore user input that doesn't come from adaptive card
         if (context.activity.channelData && context.activity.channelData[ActionTypes.PostBack]) {
+            // Validate it comes from the correct card - This is only a worry while the prompt/dialog has not ended
+            if (context.activity.value && context.activity.value['uniqueCardId'] != this.uniqueCardId) {
+                return { succeeded: false };
+            }
+            // Check for required input data
             let missingIds = [];
             this._requiredInputIds.forEach((id): void => {
                 if (!context.activity.value[id] || !context.activity.value[id].trim()) {
@@ -115,6 +126,46 @@ export class AdaptiveCardPrompt extends Prompt<object> {
         } else if (isRetry && (retryAttachments.length === 0 || retryAttachments[0].contentType !== adaptiveCardType)) {
             throw new Error('AdaptiveCardPrompt must have an Adaptive Card in PromptOptions.retryPrompt.attachments');
         }
+    }
+
+    private addCardIdToCard(card: Attachment): Attachment {
+        card.content = this.deepSearchJsonForActionsAndAddData(card.content, this.uniqueCardId);
+        return card;
+    }
+
+    private deepSearchJsonForActionsAndAddData(json: object, dataValue: string): object {
+        const submitAction = 'Action.Submit';
+        const showCardAction = 'Action.ShowCard';
+    
+        for (const key in json) {
+            // Search for all submits in actions
+            if (key === 'actions') {
+                for (const action in json[key]) {
+                    if (json[key][action].type && json[key][action].type === submitAction) {
+                        json[key][action].data = { ...json[key][action].data, ...{ uniqueCardId: dataValue }};
+    
+                    // Recursively search Action.ShowCard for Submits within the nested card
+                    } else if (json[key][action].type && json[key][action].type === showCardAction) {
+                        json[key][action] = this.deepSearchJsonForActionsAndAddData(json[key][action], dataValue);
+                    }
+                }
+                
+            // Search for all submits in selectActions
+            } else if (key === 'selectAction') {
+                if (json[key].type && json[key].type === submitAction) {
+                    json[key].data = { ...json[key].data, ...{ uniqueCardId: dataValue }};
+    
+                // Recursively search Action.ShowCard for Submits within the nested card
+                } else if (json[key].type && json[key].type === showCardAction) {
+                    json[key] = this.deepSearchJsonForActionsAndAddData(json[key], dataValue);
+                }
+    
+            // Recursively search all other objects
+            } else if (json[key] && typeof json[key] === 'object') {
+                json[key] = this.deepSearchJsonForActionsAndAddData(json[key], dataValue);
+            }
+        }
+        return json;
     }
 }
 

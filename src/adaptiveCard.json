@@ -2,12 +2,34 @@
     "type": "AdaptiveCard",
     "body": [
         {
+            "type": "Input.Text",
+            "id": "textInput",
+            "title": "New Input.Toggle",
+            "placeholder": "Placeholder text"
+        },
+        {
+            "type": "Input.ChoiceSet",
+            "id": "choiceInput",
+            "placeholder": "Placeholder text",
+            "choices": [
+                {
+                    "title": "Choice 1",
+                    "value": "Choice 1"
+                },
+                {
+                    "title": "Choice 2",
+                    "value": "Choice 2"
+                }
+            ],
+            "style": "expanded"
+        },
+        {
             "type": "Container",
             "items": [
                 {
                     "type": "TextBlock",
-                    "size": "medium",
-                    "weight": "bolder",
+                    "size": "Medium",
+                    "weight": "Bolder",
                     "text": "Publish Adaptive Card schema"
                 },
                 {
@@ -18,6 +40,13 @@
                             "items": [
                                 {
                                     "type": "Image",
+                                    "selectAction": {
+                                        "type": "Action.Submit",
+                                        "data": {
+                                            "keepMe": "ok",
+                                            "keepMeToo": "okAlso"
+                                        }
+                                    },
                                     "style": "Person",
                                     "url": "https://pbs.twimg.com/profile_images/3647943215/d7f12830b3c17a5a9e4afcc370e3a37e_400x400.jpeg",
                                     "size": "Small"
@@ -40,6 +69,38 @@
                                     "text": "Created {{DATE(2017-02-14T06:08:39Z,SHORT)}}",
                                     "isSubtle": true,
                                     "wrap": true
+                                },
+                                {
+                                    "items": [
+                                        {
+                                            "type": "Image",
+                                            "selectAction": {
+                                                "type": "Action.Submit",
+                                                "data": {
+                                                    "keepMe": "ok",
+                                                    "keepMeToo": "okAlso"
+                                                }
+                                            },
+                                            "style": "Person",
+                                            "url": "https://pbs.twimg.com/profile_images/3647943215/d7f12830b3c17a5a9e4afcc370e3a37e_400x400.jpeg",
+                                            "size": "Small",
+                                            "items": [
+                                                {
+                                                    "type": "Image",
+                                                    "selectAction": {
+                                                        "type": "Action.Submit",
+                                                        "data": {
+                                                            "keepMe": "ok",
+                                                            "keepMeToo": "okAlso"
+                                                        }
+                                                    },
+                                                    "style": "Person",
+                                                    "url": "https://pbs.twimg.com/profile_images/3647943215/d7f12830b3c17a5a9e4afcc370e3a37e_400x400.jpeg",
+                                                    "size": "Small"
+                                                }
+                                            ]
+                                        }
+                                    ]
                                 }
                             ],
                             "width": "stretch"
@@ -47,40 +108,17 @@
                     ]
                 }
             ]
-        },
-        {
-            "type": "Container",
-            "items": [
-                {
-                    "type": "TextBlock",
-                    "text": "Now that we have defined the main rules and features of the format, we need to produce a schema and publish it to GitHub. The schema will be the starting point of our reference documentation.",
-                    "wrap": true
-                },
-                {
-                    "type": "FactSet",
-                    "facts": [
-                        {
-                            "title": "Board:",
-                            "value": "Adaptive Card"
-                        },
-                        {
-                            "title": "List:",
-                            "value": "Backlog"
-                        },
-                        {
-                            "title": "Assigned to:",
-                            "value": "Matt Hidinger"
-                        },
-                        {
-                            "title": "Due date:",
-                            "value": "Not set"
-                        }
-                    ]
-                }
-            ]
         }
     ],
     "actions": [
+        {
+            "type": "Action.Submit",
+            "title": "Submit",
+            "data": {
+                "keepMe": "ok",
+                "keepMeToo": "okAlso"
+            }
+        },
         {
             "type": "Action.ShowCard",
             "title": "Set due date",
@@ -101,18 +139,17 @@
                 ],
                 "actions": [
                     {
-                        "type": "Action.OpenUrl",
+                        "type": "Action.Submit",
                         "title": "OK",
-                        "url": "http://adaptivecards.io"
+                        "url": "http://adaptivecards.io",
+                        "data": {
+                            "keepMe": "ok",
+                            "keepMeToo": "okAlso"
+                        }
                     }
                 ],
                 "$schema": "http://adaptivecards.io/schemas/adaptive-card.json"
             }
-        },
-        {
-            "type": "Action.OpenUrl",
-            "title": "View",
-            "url": "http://adaptivecards.io"
         }
     ],
     "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",

@@ -18,7 +18,6 @@ import {
 } from 'botbuilder-dialogs';
 import { TurnContext, StatePropertyAccessor, CardFactory } from 'botbuilder';
 import { AdaptiveCardPrompt } from './AdaptiveCardPrompt';
-import { AdaptiveCardPromptDialog } from './AdaptiveCardPromptDialog';
 
 import * as cardJson from './adaptiveCard.json';
 
@@ -51,7 +50,9 @@ export class QuickDialog extends ComponentDialog {
         this.addDialog(new DateTimePrompt(promptIds.DATETIME));
         this.addDialog(new ConfirmPrompt(promptIds.CONFIRM));
         this.addDialog(new AttachmentPrompt(promptIds.ATTACHMENT));
-        this.addDialog(new AdaptiveCardPrompt(promptIds.ADAPTIVE));
+        this.addDialog(new AdaptiveCardPrompt(promptIds.ADAPTIVE, null, {
+            requiredInputIds: ['textInput']
+        }));
 
         this.initialDialogId = 'QuickWaterfallDialog';
     }
@@ -71,7 +72,7 @@ export class QuickDialog extends ComponentDialog {
         // await step.context.sendActivity('Beginning QuickDialog...');
         const card = CardFactory.adaptiveCard(cardJson);
         const options: PromptOptions = {
-            prompt: {attachments: [card] },
+            prompt: { attachments: [card] },
             retryPrompt: { attachments: [card] },
         };
         return await step.prompt(promptIds.ADAPTIVE, options);
