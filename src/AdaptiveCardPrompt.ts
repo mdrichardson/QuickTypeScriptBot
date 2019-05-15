@@ -1,16 +1,74 @@
 import { PromptValidator, DialogContext, PromptOptions, DialogTurnResult, Prompt, PromptRecognizerResult, Dialog } from "botbuilder-dialogs";
 import { InputHints, TurnContext, Activity, ActionTypes, Attachment } from "botbuilder";
 
+/**
+ * Options to control the behavior of AdaptiveCardPrompt
+ */
 export interface AdaptiveCardPromptOptions {
+    /**
+     * An Adaptive Card. Can be input here or in constructor
+     */
     card?: Attachment;
+
+    /**
+     * Message sent (if not null) when user uses text input instead of Adaptive Card Input
+     * 
+     * @remarks
+     * Defaults to: 'Please fill out the Adaptive Card'
+     */
     inputFailMessage?: string;
+
+    /**
+     * Array of strings matching IDs of required input fields
+     * 
+     * @remarks
+     * The ID strings must exactly match those used in the Adaptive Card JSON Input IDs
+     * For JSON:
+     * ```json
+     * {
+        *   "type": "Input.Text",
+        *   "id": "myCustomId",
+        * },
+        *```
+        * You would use `"myCustomId"` if you want that to be a required input.
+        */
     requiredInputIds?: string[];
+
+    /**
+     * Message sent (if not null) when user doesn't submit a required input
+     * <Each, Missing, Input> gets appended to the end of the string
+     * 
+     * @remarks
+     * Defaults to: The following inputs are required'
+     */
     missingRequiredInputsMessage?: string;
+
+    /**
+     * Card will not be redisplayed/reprompted unless:
+     *   * PromptOptions includes a retryPrompt with a card, or
+     *   * Number of attempts per displayed card equals this value
+     * 
+     * @remarks
+     * This is meant to prevent the user from providing input to the original, 
+     *   and not the reprompted card
+     * Defaults to 3
+     */
     attemptsBeforeCardRedisplayed?: number;
 }
 
-export class AdaptiveCardPrompt extends Prompt<object> {
-    private _validator: PromptValidator<object>;
+/**
+ * Waits for Adaptive Card Input to be received.
+ * 
+ * @remarks
+ * This prompt is similar to ActivityPrompt but provides features specific to Adaptive Cards:
+ *   * Card can be passed in constructor or as prompt/reprompt activity attachment 
+ *   * Includes validation for specified required input fields
+ *   * Displays custom message if user replies via text and not card input
+ *   * Ensures input is only valid if it comes from the appropriate card (not one shown previous to prompt)
+ * DO NOT USE WITH CHANNELS THAT DON'T SUPPORT ADAPTIVE CARDS
+ */
+export class AdaptiveCardPrompt extends Dialog {
+    private validator: PromptValidator<object>;
     private static _inputFailMessage: string;
     private _requiredInputIds: string[];
     private static _missingRequiredInputsMessage: string;
@@ -18,10 +76,16 @@ export class AdaptiveCardPrompt extends Prompt<object> {
     private _promptId: string;
     private _card: Attachment;
 
+    /**
+     * Creates a new AdaptiveCardPrompt instance
+     * @param dialogId Unique ID of the dialog within its parent `DialogSet` or `ComponentDialog`.
+     * @param validator (optional) Validator that will be called each time a new activity is received.
+     * @param options (optional) Additional options for AdaptiveCardPrompt behavior
+     */
     public constructor(dialogId: string, validator?: PromptValidator<object>, options?: AdaptiveCardPromptOptions) {
-        super(dialogId, validator);
+        super(dialogId);
         
-        this._validator = validator;
+        this.validator = validator;
         AdaptiveCardPrompt._inputFailMessage = options.inputFailMessage || 'Please fill out the Adaptive Card';
 
         this._requiredInputIds = options.requiredInputIds;
@@ -32,20 +96,16 @@ export class AdaptiveCardPrompt extends Prompt<object> {
         this._card = options.card;
     }
 
-    public set inputFailMessage(newMessage: string|null) {
-        AdaptiveCardPrompt._inputFailMessage = newMessage;
-    }
+    public async beginDialog(dc: DialogContext, options: PromptOptions): Promise<DialogTurnResult> {
+        // Initialize prompt state
+        const state: any = dc.activeDialog.state as PromptState;
+        state.options = options;
+        state.state = {};
 
-    public set requiredInputIds(newIds: string[]|null) {
-        this._requiredInputIds = newIds;
-    }
+        // Send initial prompt
+        await this.onPrompt(dc.context, state.state, state.options, false);
 
-    public set missingRequiredInputsMessage(newMessage: string|null) {
-        AdaptiveCardPrompt._missingRequiredInputsMessage = newMessage;
-    }
-
-    public set card(newCard: Attachment) {
-        this._card = newCard;
+        return Dialog.EndOfTurn;
     }
 
     protected async onPrompt(context: TurnContext, state: object, options: PromptOptions, isRetry: boolean): Promise<void> {
@@ -72,35 +132,9 @@ export class AdaptiveCardPrompt extends Prompt<object> {
         await context.sendActivity(prompt, undefined, InputHints.ExpectingInput);
     }
 
-    protected async onRecognize(context: TurnContext): Promise<PromptRecognizerResult<object>> {
-        // Ignore user input that doesn't come from adaptive card
-        if (context.activity.channelData && context.activity.channelData[ActionTypes.PostBack]) {
-            // Validate it comes from the correct card - This is only a worry while the prompt/dialog has not ended
-            if (context.activity.value && context.activity.value['promptId'] != this._promptId) {
-                return { succeeded: false };
-            }
-            // Check for required input data, if specified in AdaptiveCardPromptOptions
-            let missingIds = [];
-            this._requiredInputIds.forEach((id): void => {
-                if (!context.activity.value[id] || !context.activity.value[id].trim()) {
-                    missingIds.push(id);
-                }
-            });
-            if (missingIds.length > 0) {
-                if (AdaptiveCardPrompt._missingRequiredInputsMessage) {
-                    await context.sendActivity(`${ AdaptiveCardPrompt._missingRequiredInputsMessage }: ${ missingIds.join(', ') }`);
-                }
-                return { succeeded: false };
-            }
-            return { succeeded: true, value: context.activity.value };
-        } else {
-            return { succeeded: false };
-        }
-    }
-
-    // Override continueDialog so that we can catch activity.value (which is ignored for prompts, by default)
+    // Override continueDialog so that we can catch activity.value (which is ignored, by default)
     public async continueDialog(dc: DialogContext): Promise<DialogTurnResult> {
-        // Validate the return value
+        // Perform base recognition
         const state: PromptState = dc.activeDialog.state as PromptState;
         const recognized: PromptRecognizerResult<object> = await this.onRecognize(dc.context);
 
@@ -111,8 +145,8 @@ export class AdaptiveCardPrompt extends Prompt<object> {
         }
 
         let isValid = false;
-        if (this._validator && recognized.succeeded) {
-            isValid = await this._validator({
+        if (this.validator && recognized.succeeded) {
+            isValid = await this.validator({
                 context: dc.context,
                 recognized: recognized,
                 state: state.state,
@@ -132,10 +166,38 @@ export class AdaptiveCardPrompt extends Prompt<object> {
         if (isValid) {
             return await dc.endDialog(recognized.value);
         } else {
+            // Re-prompt, conditionally display card again
             if (state.options.retryPrompt || state.state['attemptCount'] % this._attemptsBeforeCardRedisplayed === 0 ) {
                 await this.onPrompt(dc.context, state.state, state.options, true);
             }
             return await Dialog.EndOfTurn;
+        }
+    }
+
+    protected async onRecognize(context: TurnContext): Promise<PromptRecognizerResult<object>> {
+        // Ignore user input that doesn't come from adaptive card
+        if (context.activity.channelData && context.activity.channelData[ActionTypes.PostBack]) {
+            // Validate it comes from the correct card - This is only a worry while the prompt/dialog has not ended
+            if (context.activity.value && context.activity.value['promptId'] != this._promptId) {
+                return { succeeded: false };
+            }
+            // Check for required input data, if specified in AdaptiveCardPromptOptions
+            let missingIds = [];
+            this._requiredInputIds.forEach((id): void => {
+                if (!context.activity.value[id] || !context.activity.value[id].trim()) {
+                    missingIds.push(id);
+                }
+            });
+            // Alert user to missing data
+            if (missingIds.length > 0) {
+                if (AdaptiveCardPrompt._missingRequiredInputsMessage) {
+                    await context.sendActivity(`${ AdaptiveCardPrompt._missingRequiredInputsMessage }: ${ missingIds.join(', ') }`);
+                }
+                return { succeeded: false };
+            }
+            return { succeeded: true, value: context.activity.value };
+        } else {
+            return { succeeded: false };
         }
     }
 
