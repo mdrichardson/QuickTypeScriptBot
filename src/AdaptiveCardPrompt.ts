@@ -1,19 +1,38 @@
 import { PromptValidator, DialogContext, PromptOptions, DialogTurnResult, Prompt, PromptRecognizerResult, Dialog } from "botbuilder-dialogs";
-import { InputHints, TurnContext, Activity, ActionTypes } from "botbuilder";
+import { InputHints, TurnContext, Activity, ActionTypes, Attachment } from "botbuilder";
+
+export interface AdaptiveCardPromptOptions {
+    inputFailMessage?: string;
+    requiredInputIds?: string[];
+    missingRequiredInputsMessage?: string;
+}
 
 export class AdaptiveCardPrompt extends Prompt<object> {
     private _validator: PromptValidator<object>;
-    private _inputFailMessage: string = 'Please fill out the Adaptive Card';
+    private static _inputFailMessage: string;
+    private _requiredInputIds: string[];
+    private static _missingRequiredInputsMessage: string;
 
-    public constructor(dialogId: string, validator?: PromptValidator<object>, inputFailMessage?: string) {
+    public constructor(dialogId: string, validator?: PromptValidator<object>, options?: AdaptiveCardPromptOptions) {
         super(dialogId, validator);
         
         this._validator = validator;
-        this._inputFailMessage = inputFailMessage;
+        AdaptiveCardPrompt._inputFailMessage = options.inputFailMessage || 'Please fill out the Adaptive Card';
+
+        this._requiredInputIds = options.requiredInputIds;
+        AdaptiveCardPrompt._missingRequiredInputsMessage = options.missingRequiredInputsMessage || 'The following inputs are required';
     }
 
     public set inputFailMessage(newMessage: string|null) {
-        this._inputFailMessage = newMessage;
+        AdaptiveCardPrompt._inputFailMessage = newMessage;
+    }
+
+    public set requiredInputIds(newIds: string[]|null) {
+        this._requiredInputIds = newIds;
+    }
+
+    public set missingRequiredInputsMessage(newMessage: string|null) {
+        AdaptiveCardPrompt._missingRequiredInputsMessage = newMessage;
     }
 
     protected async onPrompt(context: TurnContext, state: object, options: PromptOptions, isRetry: boolean): Promise<void> {        
@@ -24,8 +43,21 @@ export class AdaptiveCardPrompt extends Prompt<object> {
     }
 
     protected async onRecognize(context: TurnContext): Promise<PromptRecognizerResult<object>> {
+        // TODO: Validate it comes from the correct card - GUID
         // Ignore user input that doesn't come from adaptive card
         if (context.activity.channelData && context.activity.channelData[ActionTypes.PostBack]) {
+            let missingIds = [];
+            this._requiredInputIds.forEach((id): void => {
+                if (!context.activity.value[id] || !context.activity.value[id].trim()) {
+                    missingIds.push(id);
+                }
+            });
+            if (missingIds.length > 0) {
+                if (AdaptiveCardPrompt._missingRequiredInputsMessage) {
+                    await context.sendActivity(`${ AdaptiveCardPrompt._missingRequiredInputsMessage }: ${ missingIds.join(', ') }`);
+                }
+                return { succeeded: false };
+            }
             return { succeeded: true, value: context.activity.value };
         } else {
             return { succeeded: false };
@@ -56,9 +88,9 @@ export class AdaptiveCardPrompt extends Prompt<object> {
         } else if (recognized.succeeded) {
             isValid = true;
         } else {
-            // User used text input instead of card input
-            if (this._inputFailMessage) {
-                await dc.context.sendActivity(this._inputFailMessage);
+            // User used text input instead of card input or is missing required Inputs
+            if (AdaptiveCardPrompt._inputFailMessage) {
+                await dc.context.sendActivity(AdaptiveCardPrompt._inputFailMessage);
             }
         }
 
