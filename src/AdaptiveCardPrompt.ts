@@ -14,9 +14,10 @@ export interface AdaptiveCardPromptOptions {
      * Message sent (if not null) when user uses text input instead of Adaptive Card Input
      * 
      * @remarks
+     * Only needs to be set once; this is static across all instances of AdaptiveCardPrompt.
      * Defaults to: 'Please fill out the Adaptive Card'
      */
-    inputFailMessage?: string;
+    inputFailMessage?: string|null|undefined;
 
     /**
      * Array of strings matching IDs of required input fields
@@ -39,9 +40,10 @@ export interface AdaptiveCardPromptOptions {
      * <Each, Missing, Input> gets appended to the end of the string
      * 
      * @remarks
+     * Only needs to be set once; this is static across all instances of AdaptiveCardPrompt.
      * Defaults to: The following inputs are required'
      */
-    missingRequiredInputsMessage?: string;
+    missingRequiredInputsMessage?: string|null|undefined;
 
     /**
      * Card will not be redisplayed/reprompted unless:
@@ -69,9 +71,9 @@ export interface AdaptiveCardPromptOptions {
  */
 export class AdaptiveCardPrompt extends Dialog {
     private validator: PromptValidator<object>;
-    private static _inputFailMessage: string;
+    private static _inputFailMessage: string|null|undefined;
     private _requiredInputIds: string[];
-    private static _missingRequiredInputsMessage: string;
+    private static _missingRequiredInputsMessage: string|null|undefined;
     private _attemptsBeforeCardRedisplayed: number;
     private _promptId: string;
     private _card: Attachment;
