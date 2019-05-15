@@ -11,11 +11,20 @@ import {
     DialogState, 
     DialogSet,
     DialogTurnStatus,
-    DialogTurnResult
+    DialogTurnResult,
+    PromptOptions,
+    PromptValidatorContext,
+    PromptValidator
 } from 'botbuilder-dialogs';
-import { TurnContext, StatePropertyAccessor } from 'botbuilder';
+import { TurnContext, StatePropertyAccessor, CardFactory } from 'botbuilder';
+import { AdaptiveCardPrompt } from './AdaptiveCardPrompt';
+import { AdaptiveCardPromptDialog } from './AdaptiveCardPromptDialog';
+
+import * as cardJson from './adaptiveCard.json';
 
 const promptIds = {
+    ADAPTIVE: 'adaptivePrompt',
+    ADAPTIVEDialog: 'adaptivePromptDialog',
     ATTACHMENT: 'attachmentPrompt',
     CHOICE: 'choicePrompt',
     CONFIRM: 'confirmPrompt',
@@ -34,12 +43,17 @@ export class QuickDialog extends ComponentDialog {
             this.end.bind(this),
         ]));
 
+        const card = CardFactory.adaptiveCard(cardJson);
+
         this.addDialog(new ChoicePrompt(promptIds.CHOICE));
         this.addDialog(new TextPrompt(promptIds.TEXT));
         this.addDialog(new NumberPrompt(promptIds.NUMBER));
         this.addDialog(new DateTimePrompt(promptIds.DATETIME));
         this.addDialog(new ConfirmPrompt(promptIds.CONFIRM));
         this.addDialog(new AttachmentPrompt(promptIds.ATTACHMENT));
+        this.addDialog(new AdaptiveCardPrompt(promptIds.ADAPTIVE));
+
+        this.initialDialogId = 'QuickWaterfallDialog';
     }
 
     public async run(context: TurnContext, accessor: StatePropertyAccessor<DialogState>): Promise<void> {
@@ -54,16 +68,29 @@ export class QuickDialog extends ComponentDialog {
     }
 
     private async stepOne(step: WaterfallStepContext): Promise<DialogTurnResult> {
-        await step.context.sendActivity('Beginning QuickDialog...');
-        return await step.next();
+        // await step.context.sendActivity('Beginning QuickDialog...');
+        const card = CardFactory.adaptiveCard(cardJson);
+        const options: PromptOptions = {
+            prompt: {attachments: [card] },
+            retryPrompt: { attachments: [card] },
+        };
+        return await step.prompt(promptIds.ADAPTIVE, options);
+        // return await step.beginDialog(promptIds.ADAPTIVEDialog);
     }
 
     private async stepTwo(step: WaterfallStepContext): Promise<DialogTurnResult> {
-        // await step.context.sendActivity(`You said ${step.result}`);
+        await step.context.sendActivity(`You said ${ step.result }`);
         return await step.next();
     }
 
     private async end(step: WaterfallStepContext): Promise<DialogTurnResult> {
         return await step.endDialog();
+    }
+
+    private async validate(promptContext: PromptValidatorContext<object>): Promise<boolean> {
+        if (promptContext.recognized.value['textInput'] === 'asdf') {
+            return true;
+        }
+        return false;
     }
 }
