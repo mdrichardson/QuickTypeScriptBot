@@ -33,7 +33,7 @@
     },
     "devDependencies": {
         "@types/dotenv": "^6.1.1",
-        "@types/node": "^11.13.9",
+        "@types/node": "^12.6.2",
         "@types/restify": "^7.2.6",
         "@typescript-eslint/eslint-plugin": "^1.7.0",
         "@typescript-eslint/parser": "^1.7.0",
