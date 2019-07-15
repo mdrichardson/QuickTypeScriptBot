@@ -21,8 +21,8 @@ require('dotenv').config({ path: ENV_FILE });
 // See https://aka.ms/about-bot-adapter to learn more about .bot file its use and bot configuration.
 
 const adapter = new BotFrameworkAdapter({
-    appId: process.env.MicrosoftAppID,
-    appPassword: process.env.MicrosoftAppPassword
+    appId: process.env.UseCredentials === "true" ? process.env.MicrosoftAppID : '',
+    appPassword: process.env.UseCredentials === "true" ? process.env.MicrosoftAppPassword : ''
 });
 
 const dataStorage = new MemoryStorage();
