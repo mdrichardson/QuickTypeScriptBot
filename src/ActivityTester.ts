@@ -16,7 +16,6 @@ export async function onMembersAdded(context: TurnContext, dialog: Dialog, dialo
     for (let cnt = 0; cnt < membersAdded.length; cnt++) {
         if (membersAdded[cnt].id !== context.activity.recipient.id) {
             await notifyOfActivity('onMembersAdded', context);
-            await (dialog as QuickDialog).run(context, dialogState);
         }
     }
     return;
@@ -24,6 +23,7 @@ export async function onMembersAdded(context: TurnContext, dialog: Dialog, dialo
 
 export async function onMessage(context: TurnContext, dialog: Dialog, dialogState: StatePropertyAccessor<DialogState>): Promise<void> {
     await notifyOfActivity('onMessage', context);
+    await (dialog as QuickDialog).run(context, dialogState);
     return;
 }
 

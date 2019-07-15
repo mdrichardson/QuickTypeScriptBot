@@ -13,7 +13,9 @@ import {
     DialogTurnStatus,
     DialogTurnResult
 } from 'botbuilder-dialogs';
-import { TurnContext, StatePropertyAccessor } from 'botbuilder';
+import { TurnContext, StatePropertyAccessor, CardFactory, MessageFactory } from 'botbuilder';
+
+import * as cardJson from './adaptiveCard.json';
 
 const promptIds = {
     ATTACHMENT: 'attachmentPrompt',
@@ -55,6 +57,15 @@ export class QuickDialog extends ComponentDialog {
 
     private async stepOne(step: WaterfallStepContext): Promise<DialogTurnResult> {
         await step.context.sendActivity('Beginning QuickDialog...');
+
+        const card = CardFactory.adaptiveCard(cardJson);
+        
+        // return await step.prompt(promptIds.TEXT, {
+        //     prompt: {
+        //         text: 'waiting for user input...', // You can comment this out if you don't want to display any text. Still works.
+        //         attachments: [card]
+        //     }
+        // });
         return await step.next();
     }
 
