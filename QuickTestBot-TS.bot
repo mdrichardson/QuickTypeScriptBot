@@ -12,14 +12,6 @@
         },
         {
             "type": "endpoint",
-            "name": "relay",
-            "endpoint": "https://bfsupportrelay.servicebus.windows.net/vmicricRelay/api/messages",
-            "appId": "f94ea2b04-ccba-437e-b3f1-3f0376fcbc98",
-            "appPassword": "6zjpqK//GoHFPji2KQO7fw==!D/lFCy+1Rc5SwRp9/f6/tWzPuSbaSytJrAivUkRgg0g=",
-            "id": "2"
-        },
-        {
-            "type": "endpoint",
             "appId": "94ea2b04-ccba-437e-b3f1-3f0376fcbc98",
             "appPassword": "wAHbT2y9XzgZXq9IW3t9UA==!VUIV2llBIbfsg8zFB6V5mtLiWsW8D0TLGkMUc0OoewE=",
             "endpoint": "https://v-micricquickts.azurewebsites.net/api/messages",

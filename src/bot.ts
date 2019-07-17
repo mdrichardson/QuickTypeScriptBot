@@ -23,7 +23,12 @@ export class MyBot extends ActivityHandler {
         this.dialog = dialog;
 
         this.onConversationUpdate(async (context, next): Promise<void> => { await ActivityTester.onConversationUpdate(context, this.dialog, this.dialogState); await next(); });
-        this.onDialog(async (context, next): Promise<void> => { await ActivityTester.onDialog(context, this.dialog, this.dialogState); await next(); });
+        this.onDialog(async (context, next): Promise<void> => { 
+            await ActivityTester.onDialog(context, this.dialog, this.dialogState); 
+            await this.conversationState.saveChanges(context, false);
+            await this.userState.saveChanges(context, false);
+            await next(); 
+        });
         this.onEvent(async (context, next): Promise<void> => { await ActivityTester.onEvent(context, this.dialog, this.dialogState); await next(); });
         this.onMembersAdded(async (context, next): Promise<void> => { await ActivityTester.onMembersAdded(context, this.dialog, this.dialogState); await next(); });
         this.onMembersRemoved(async (context, next): Promise<void> => { await ActivityTester.onMembersRemoved(context, this.dialog, this.dialogState); await next(); });
